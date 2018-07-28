@@ -16,6 +16,7 @@
         <!-- REFERENCED EXTERNAL FILES                               -->
         <!-- ======================================================= -->
         <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <!-- ======================================================= -->
 
 
@@ -27,8 +28,8 @@
 
             /* PAGE BODY BACKGROUND */
             body { 
-                background-color:             lightgrey;
-                color:                        #262639;
+                background-color:               lightgrey;
+                color:                          #262639;
                 font-family:                    'Nunito', 'Helvetica', 'sans-serif';
                 margin:                         0;         
            }
@@ -36,8 +37,7 @@
             /* PAGE TOP HEADER SECTION */
             #page-header-banner {      
                 background:                     url(https://parents.education.govt.nz/themes/parent-theme/images/banner-bg.jpg) center -180px repeat #68bdd0;
-                display:                        block;
-                height:                         200px;
+                height:                         150px;
                 width:                          100%;
             } 
 
@@ -54,7 +54,7 @@
             /* PAGE CONTENT WRAPPER DIV */
             #page-content-wrapper {
                 margin:                         0 auto;
-                background-color:             white;
+                background-color:               white;
                 width:                          80%;
                 height:                         100%;
                 border-top-left-radius:         1.3em;
@@ -101,11 +101,20 @@
                 margin-top:                     10px;
                 margin-bottom:                  0px;
             }
+
+            /* STYLE FOR PAGE HEADERS */
+            h1 {
+                margin-left:                    5%;
+                margin-right:                   5%;
+            }
+
             
             /* GENERIC STYLE APPLIED TO ALL BUTTONS */
             button {
-                border:                         1px;
-                color:                        black;
+                border:                         1px solid lightgrey;
+                background-color:               white;
+                color:                          black;
+                outline:                        none;
                 padding:                        20px;
                 text-align:                     center;
                 text-decoration:                none;
@@ -113,25 +122,59 @@
                 font-size:                      16;
             }
 
+            /* BACKGROUND STYLE FOR ACTIVE BUTTONS */
+            button:focus{
+                background:                     #a8dbe5;
+            }
+
+            /* GENERIC STYLE APPLIED TO ALL INPUT TEXT FIELDS */
+            input {
+                padding:                        20px;
+                text-align:                     center;
+                font-size:                      16;
+                border:                         1px solid lightgrey;
+            }
             
             /* STYLE FOR LEFT HAND SIDE BUTTONS */
-            .leftbutton{
+            .leftbutton {
                 margin-right:                   -5px;
                 border-top-left-radius:         18px;
                 border-bottom-left-radius:      18px;
-}
+            }
 
             /* STYLE FOR RIGHT HAND SIDE BUTTONS */
-            .rightbutton{
+            .rightbutton {
                 margin-left:                    -5px;
                 border-top-right-radius:        18px;
                 border-bottom-right-radius:     18px;
             }
 
+            /* STYLE FOR CENTER BUTTONS */
+            .centerbutton {
+                border-top-right-radius:        18px;
+                border-bottom-right-radius:     18px;
+                border-top-left-radius:         18px;
+                border-bottom-left-radius:      18px;
+            }
+
             /* STYLE FOR QUESTION SECTIONS */
             .section {
                 margin-left:                    5%;
+                margin-right:                   5%;
+                display:                        none;
+                margin-bottom:                  50px;
             }
+
+            /* STYLE FOR OUTCOME SECTIONS */
+            .outcome {
+                display:                        none;
+                margin-left:                    5%;
+                margin-right:                   5%;
+                margin-bottom:                  50px;
+                background-color:               #ffd04f;
+                padding:                        10px;
+            }
+
         </style>
         <!-- ======================================================= -->
 
@@ -143,26 +186,31 @@
         <script type="text/javascript">
 
             // FUNCTION TO PUSH THROUGH QUESTION SECTIONS
-            function myFunction(num, but, select) {
-
-                var w = document.getElementById("sect"+num+"true");
-                var x = document.getElementById("sect"+num+"false");
-                if(select){
-                    var y = document.getElementById("yes"+but);
-                    var z = document.getElementById("no"+but);
-                    w.style.display = "inline";
-                    x.style.display = "none";
-                } 
+            function AdvanceSection(level, caller) {
                 
-                else{
-                    var z = document.getElementById("yes"+but);
-                    var y = document.getElementById("no"+but);
-                    w.style.display = "none";
-                    x.style.display = "inline";
-                }
+                // SHOW THE NEXT SECTION
+                document.getElementById("sect" + level).style.display = "block";
+                document.getElementById("sect" + (level + 1)).style.display = "block";
+                
+                // SCROLL TO THE NEXT SECTION
+                $([document.documentElement, document.body]).animate({
+                scrollTop: $("#sect" + level).offset().top
+                }, 1000);
+            }
 
-                y.style.backgroundColor = "green";
-                z.style.backgroundColor = "white";
+            // FUNCTION TO INCREMENT OR DECREMENT INTEGER INPUT FIELD
+            function AdvanceField(increment, target) {
+
+                // INCREMENT OR DECREMENT THE FIELD
+                document.getElementById(target).value = parseInt(document.getElementById(target).value) + increment;
+            }
+
+            // FUNCTION TO CALCULATE OUTCOMES
+            function Calculate() {
+                
+                // ITERATE OVER ELEMENTS WITH OUTCOME CLASS AND MAKE VISIBLE
+                $( "div.outcome" ).show();
+
             }
 
         </script>
@@ -199,13 +247,38 @@
                 </ul>
             </div>
 
+            <h1>Considering home education?</h1>
+            <h1>Let us know your situation...</h1>
+
             <!-- FIRST QUESTION SECTION -->
-            <div class="section" id="sect1">
-                <h1>Considering home education? Here's what you need to know...</h1>
-                <p>Are you a New Zealand Citizen?</p>
-                <button id="yes1" class="leftbutton" onclick="myFunction('2', '1', true)">yes</button>
-                <button id="no1" class="rightbutton" onclick="myFunction('2', '1', false)">no</button>
+            <div class="section" id="sect1" style="display:block">
+                
+                <p>Are you a parent or legal guardian?</p>
+                <button id="yes1" class="leftbutton" onclick="AdvanceSection(2, this.id)">yes</button>
+                <button id="no1" class="rightbutton" onclick="AdvanceSection(2, this.id)">no</button>
             </div>
+
+            <!-- FIRST QUESTION SECTION -->
+            <div class="section" id="sect2">
+                <p>How many children are you considering home educating?</p>
+                <button class="leftbutton"  onclick="AdvanceField(-1, 'children')">-</button>
+                <input style="width:100px;" id="children" type="text" value="1"/>
+                <button class="rightbutton" onclick="AdvanceField(1, 'children')">+</button>
+            </div>
+
+            <!-- SUBMIT BUTTON SECTION -->
+            <div class="section" id="sect3">
+                <button class="centerbutton"  onclick="Calculate()">Submit</button>
+            </div>
+
+            <div class="outcome">
+                <h2>Here's what you need to know...</h2>
+            </div>
+
+            <div class="outcome">
+                <h2>Here's what support you may be entitled to...</h2>
+            </div>
+
         </div>
 
 
@@ -215,4 +288,4 @@
 
 
 </html>
-<!-- =======================================================-->
+<!-- ======================================================= -->
