@@ -1,0 +1,218 @@
+<!-- =======================================================-->
+<!-- HOME EDUCATION FRONT END PAGE                          -->
+<!-- =======================================================-->
+<html>
+
+
+
+    <!-- ======================================================= -->
+    <!-- BEGIN LANDING PAGE HEADER TAG                           -->
+    <!-- ======================================================= -->
+    <head>
+
+
+
+        <!-- ======================================================= -->
+        <!-- REFERENCED EXTERNAL FILES                               -->
+        <!-- ======================================================= -->
+        <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
+        <!-- ======================================================= -->
+
+
+
+        <!-- ======================================================= -->
+        <!-- BEGIN LANDING PAGE STYLESHEET                           -->
+        <!-- ======================================================= -->
+        <style>
+
+            /* PAGE BODY BACKGROUND */
+            body { 
+                background-color:             lightgrey;
+                color:                        #262639;
+                font-family:                    'Nunito', 'Helvetica', 'sans-serif';
+                margin:                         0;         
+           }
+
+            /* PAGE TOP HEADER SECTION */
+            #page-header-banner {      
+                background:                     url(https://parents.education.govt.nz/themes/parent-theme/images/banner-bg.jpg) center -180px repeat #68bdd0;
+                display:                        block;
+                height:                         200px;
+                width:                          100%;
+            } 
+
+            /* PAGE TOP HEADER IMAGE */
+            #page-header-image {
+                background-image:               url(https://parents.education.govt.nz/assets/Parents/Images/Banner-images/header-08.jpg);
+                background-size:                cover;
+                height:                         400px;
+                width:                          100%;
+                position:                       relative;
+                z-index:                        -1;
+            }
+
+            /* PAGE CONTENT WRAPPER DIV */
+            #page-content-wrapper {
+                margin:                         0 auto;
+                background-color:             white;
+                width:                          80%;
+                height:                         100%;
+                border-top-left-radius:         1.3em;
+                border-top-right-radius:        1.3em;
+            }
+
+            /* PAGE NAVIGATION MENU DIV */
+            #page-menu-wrapper {
+                z-index:                        100;
+                margin:                         -86 0 0;
+                width:                          100%;
+                height:                         70px; 
+                background-color:               #a8dbe5;
+                border-top-left-radius:         1.3em;
+                border-top-right-radius:        1.3em;
+            }
+
+            /* PAGE NAVIGATION MENU */
+            #page-menu {
+                padding:                        0;
+                margin-left:                    5%;
+                margin-right:                   5%;
+            }
+
+            /* PAGE TOP LEFT LOGO IMAGE */
+            .page-logo-image {
+                margin-left:                    10%;
+                margin-top:                     50px;
+                font-weight:                    bold;
+            }
+
+            /* STYLE FOR EACH MENU ITEM */
+            .menu-item {
+                width:                          50%;
+                min-width:                      120px;
+                float:                          left;
+                display:                        inline;
+                height:                         100%;
+                text-align:                     center;
+            }
+            
+            /* STYLE FOR MENU ITEM HEADERS */
+            h2 {
+                margin-top:                     10px;
+                margin-bottom:                  0px;
+            }
+            
+            /* GENERIC STYLE APPLIED TO ALL BUTTONS */
+            button {
+                border:                         1px;
+                color:                        black;
+                padding:                        20px;
+                text-align:                     center;
+                text-decoration:                none;
+                display:                        inline-block;
+                font-size:                      16;
+            }
+
+            
+            /* STYLE FOR LEFT HAND SIDE BUTTONS */
+            .leftbutton{
+                margin-right:                   -5px;
+                border-top-left-radius:         18px;
+                border-bottom-left-radius:      18px;
+}
+
+            /* STYLE FOR RIGHT HAND SIDE BUTTONS */
+            .rightbutton{
+                margin-left:                    -5px;
+                border-top-right-radius:        18px;
+                border-bottom-right-radius:     18px;
+            }
+
+            /* STYLE FOR QUESTION SECTIONS */
+            .section {
+                margin-left:                    5%;
+            }
+        </style>
+        <!-- ======================================================= -->
+
+
+
+        <!-- ======================================================= -->
+        <!-- HOME EDUCATION PAGE JAVASCRIPT                          -->
+        <!-- ======================================================= -->
+        <script type="text/javascript">
+
+            // FUNCTION TO PUSH THROUGH QUESTION SECTIONS
+            function myFunction(num, but, select) {
+
+                var w = document.getElementById("sect"+num+"true");
+                var x = document.getElementById("sect"+num+"false");
+                if(select){
+                    var y = document.getElementById("yes"+but);
+                    var z = document.getElementById("no"+but);
+                    w.style.display = "inline";
+                    x.style.display = "none";
+                } 
+                
+                else{
+                    var z = document.getElementById("yes"+but);
+                    var y = document.getElementById("no"+but);
+                    w.style.display = "none";
+                    x.style.display = "inline";
+                }
+
+                y.style.backgroundColor = "green";
+                z.style.backgroundColor = "white";
+            }
+
+        </script>
+        <!-- ======================================================= -->
+
+
+
+    </head>
+    <!-- ======================================================= -->
+
+
+
+    <!-- ======================================================= -->
+    <!-- BEGIN LANDING PAGE CONTENT BODY                         -->
+    <!-- ======================================================= -->
+    <body>
+
+        <!-- PAGE HEADER BANNER -->
+        <div id="page-header-banner">
+            <a href="https://parents.education.govt.nz">
+                <img class="page-logo-image" src="https://parents.education.govt.nz/themes/parent-theme/images/ie-logo.png"/>
+            </a>
+        </div>
+
+        <!-- PAGE HEADER IMAGE -->
+        <div id="page-header-image"></div>
+
+        <!-- PAGE CONTENT WRAPPER DIV -->
+        <div id="page-content-wrapper">
+            <div id="page-menu-wrapper">
+                <ul id="page-menu">
+                    <li class="menu-item" style="background-color:#ffd04f ;"><h2>Considering</h2>home education</li>
+                    <li class="menu-item" style="background-color: #a2fd51 ;"><h2>Applying</h2>for home education</li>
+                </ul>
+            </div>
+
+            <!-- FIRST QUESTION SECTION -->
+            <div class="section" id="sect1">
+                <h1>Considering home education? Here's what you need to know...</h1>
+                <p>Are you a New Zealand Citizen?</p>
+                <button id="yes1" class="leftbutton" onclick="myFunction('2', '1', true)">yes</button>
+                <button id="no1" class="rightbutton" onclick="myFunction('2', '1', false)">no</button>
+            </div>
+        </div>
+
+
+    </body>
+    <!-- =======================================================-->
+
+
+
+</html>
+<!-- =======================================================-->
