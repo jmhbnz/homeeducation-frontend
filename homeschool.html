@@ -33,6 +33,7 @@
                 background-color:               lightgrey;
                 color:                          #262639;
                 font-family:                    'Nunito', 'Helvetica', 'sans-serif';
+                font-size:                      20px;
                 margin:                         0;         
            }
 
@@ -96,10 +97,20 @@
                 height:                         100%;
                 text-align:                     center;
             }
+
+            @keyframes demo {
+                from {background-color:         #ffd04f;}
+                to {background-color:           goldenrod;}
+            }
+
+            .menu-item:hover {
+                animation-name:                 demo;
+                animation-duration:             1s;
+            }
             
             /* STYLE FOR MENU ITEM HEADERS */
             h2 {
-                margin-top:                     10px;
+                margin-top:                     0px;
                 margin-bottom:                  0px;
             }
 
@@ -131,7 +142,8 @@
                 text-align:                     center;
                 text-decoration:                none;
                 display:                        inline-block;
-                font-size:                      16;
+                font-size:                      20px;
+                width:                          150px;
             }
 
             /* BACKGROUND STYLE FOR ACTIVE BUTTONS */
@@ -202,11 +214,10 @@
                 
                 // SHOW THE NEXT SECTION
                 document.getElementById("sect" + level).style.display = "block";
-                document.getElementById("sect" + (level + 1)).style.display = "block";
 
                 // SCROLL TO THE NEXT SECTION
                 $([document.documentElement, document.body]).animate({
-                scrollTop: $("#sect" + (level + 1)).offset().top
+                scrollTop: $("#sect" + level).offset().top
                 }, 1000);
             }
 
@@ -224,17 +235,44 @@
                 // INCREMENT OR DECREMENT THE FIELD
                 document.getElementById(target).value = parseInt(document.getElementById(target).value) + increment;
 
-                // STARTING HTML FOR CHILD DATE OF BIRTH SECTION
-                var DateOfBirthHTML = "<p class='inner-paragraph'>Enter the date of birth for your children:</p>"
-                
-                // SET THE CHILD FIELD
-                for (i = 0; i < parseInt(document.getElementById("children").value); i++) { 
-                    DateOfBirthHTML += "<p class='inner-paragraph'>Child " +  i + ": <input style='width:200px;' type='text' class='datepicker'></p>" + "<br>";
+                // IF THE TARGET IS THE DATE OF BIRTH AREA
+                if (target == "children") {
+
+                    // STARTING HTML FOR CHILD DATE OF BIRTH SECTION
+                    var DateOfBirthHTML = "<p class='inner-paragraph'>Enter the date of birth for your children:</p>"
+                    
+                    // SET THE CHILD FIELD
+                    for (i = 0; i < parseInt(document.getElementById("children").value); i++) { 
+                        DateOfBirthHTML += "<p class='inner-paragraph'>Child " +  (i + 1) + ": <input style='width:200px;' type='text' class='datepicker'></p>" + "<br>";
+                    }
+
+                    document.getElementById("sect4").innerHTML = DateOfBirthHTML;
+
+                    $(".datepicker").datepicker({ 
+                        dateFormat: 'yy-mm-dd',
+                        changeYear: true,
+                        onSelect: function() {
+                            ValidateDOB();
+                    }});
                 }
+            }
 
-                document.getElementById("sect4").innerHTML = DateOfBirthHTML;
+            // FUNCTION TO VALIDATE ALL DATE OF BIRTHS FOR CHILDREN HAVE BEEN ENTERED
+            function ValidateDOB() {
 
-                $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+                // NUMBER OF CHILDREN AND COMPLETED DOBS
+                var Children = parseInt(document.getElementById("children").value);
+                var CompletedChildren = 0;
+
+                // ITERATE OVER CHILDREN AND CHECK DOBS
+                for (i = 0; i < parseInt(document.getElementById("children").value); i++) { 
+
+                    // IF THE DATE OF BIRTH WAS COMPLETED INCREMENT THE COMPLETION
+                    if (document.getElementsByClassName("datepicker")[i].value != "") CompletedChildren++;
+                }
+                
+                // IF ALL CHILDREN ARE COMPLETED ADVANCE SECTION
+                if (Children == CompletedChildren) AdvanceSection(5, "dummy");
             }
 
             // FUNCTION TO CALCULATE OUTCOMES
@@ -298,7 +336,9 @@
                     // ON THE LAST ITERATION ADD A COMMA
                     if (i == (parseInt(document.getElementById("children").value) -1)) {
 
-                        JSONFamilies += '], "education__home_education_supervision_allowance_entitlement" : { "2018-07" : null } } } }';
+                        JSONFamilies += '],"social_security__children_with_serious_disability" : { "2018-07" : "' + parseInt(document.getElementById("childrencare").value) + '" }, ';
+                        JSONFamilies += ' "social_security__eligible_for_child_disability_allowance" : { "2018-07" : null }, ';
+                        JSONFamilies += ' "education__home_education_supervision_allowance_entitlement" : { "2018-07" : null } } } }';
                     } 
                 }
 
@@ -316,6 +356,16 @@
                     success: function(data, textStatus, jqXHR){
 			            var JSONr = JSON.parse(jqXHR.responseText);
                         console.log(JSONr);
+                        
+                        var OutputText = "<ul><li><h3>Child Disability Allowance: $";
+                        OutputText += parseInt(JSON.stringify(JSONr.families.Family.social_security__eligible_for_child_disability_allowance).replace('{"2018-07":',"").replace("}",""));
+                        OutputText += " per week.</h3></li>";
+                        
+                        OutputText += "<li><h3>Home Education Supervision Allowance: $";
+                        OutputText += parseInt(JSON.stringify(JSONr.families.Family.education__home_education_supervision_allowance_entitlement).replace('{"2018-07":',"").replace("}",""));
+                        OutputText += " twice annually.</h3></li></ul>";
+
+                        document.getElementsByClassName("outcome")[1].innerHTML += OutputText;
                     }
                 });
         }
@@ -367,8 +417,8 @@
             <div class="section" id="sect1" style="display:block">
                 
                 <p class="inner-paragraph">Are you a New Zealand citizen or permanent resident?</p>
-                <button id="yes1" class="leftbutton" onclick="ToggleButtons('yes1','no1');AdvanceSection(1, this.id)">yes</button>
-                <button id="no1" class="rightbutton" onclick="ToggleButtons('no1','yes1');AdvanceSection(1, this.id)">no</button>
+                <button id="yes1" class="leftbutton" onclick="ToggleButtons('yes1','no1');AdvanceSection(2, this.id)">yes</button>
+                <button id="no1" class="rightbutton" onclick="ToggleButtons('no1','yes1');AdvanceSection(2, this.id)">no</button>
             </div>
 
             <!-- SECOND QUESTION SECTION -->
@@ -382,9 +432,9 @@
             <!-- THIRD QUESTION SECTION -->
             <div class="section" id="sect3">
                 <p class="inner-paragraph">How many children are you considering home educating?</p>
-                <button class="leftbutton"  onclick="AdvanceField(-1, 'children')">-</button>
+                <button class="leftbutton"  onclick="AdvanceField(-1, 'children');AdvanceSection(4, this.id);">-</button>
                 <input style="width:100px;" id="children" type="text" value="0"/>
-                <button class="rightbutton" onclick="AdvanceField(1, 'children')">+</button>
+                <button class="rightbutton" onclick="AdvanceField(1, 'children');AdvanceSection(4, this.id);">+</button>
             </div>
 
             <!-- FOURTH QUESTION SECTION -->
@@ -392,8 +442,23 @@
 
             </div>
 
-            <!-- SUBMIT BUTTON SECTION -->
+            <!-- FIFTH QUESTION SECTION -->
             <div class="section" id="sect5">
+                <p class="inner-paragraph">Have any of these children needed constant care and attention for at least 12 months because of a serious disability?</p>
+                <button id="yes3" class="leftbutton" onclick="ToggleButtons('yes3','no3');AdvanceSection(6, this.id)">yes</button>
+                <button id="no3" class="rightbutton" onclick="ToggleButtons('no3','yes3');AdvanceSection(6, this.id)">no</button>
+            </div>
+
+            <!-- SIXTH SECTION -->
+            <div class="section" id="sect6">
+                <p class="inner-paragraph">How many children needed this care and attention?</p>
+                <button class="leftbutton"  onclick="AdvanceField(-1, 'childrencare');AdvanceSection(7, this.id);">-</button>
+                <input style="width:100px;" id="childrencare" type="text" value="0"/>
+                <button class="rightbutton" onclick="AdvanceField(1, 'childrencare');AdvanceSection(7, this.id);">+</button>
+            </div>
+
+            <!-- SUBMIT BUTTON SECTION -->
+            <div class="section" id="sect7">
                 <button class="centerbutton"  onclick="Calculate()">Submit</button>
             </div>
 
@@ -404,7 +469,7 @@
             <div class="outcome">
                 <h2>Here's what support you may be entitled to...</h2>
             </div>
-
+            <br><br><br>
         </div>
 
 
