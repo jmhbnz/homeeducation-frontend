@@ -365,7 +365,7 @@
                         OutputText += parseInt(JSON.stringify(JSONr.families.Family.education__home_education_supervision_allowance_entitlement).replace('{"2018-07":',"").replace("}",""));
                         OutputText += " twice annually.</h3></li></ul>";
 
-                        document.getElementsByClassName("outcome")[1].innerHTML += OutputText;
+                        document.getElementsByClassName("outcome")[0].innerHTML += OutputText;
                     }
                 });
         }
@@ -411,7 +411,7 @@
             any parent or legal guardian of a child aged between 5 and 16 years of age may apply to home educate.</p>
             <p>To gain approval, your application must satisfy the Ministry that your child will be taught at least as regularly and as well as they would be in a registered school. If your child has special education needs, the application must show that these needs will be met.</p>
 
-            <h1>Want some guidance? Let us know your situation...</h1>
+            <h1>Want to know what support is available? Let us know your situation...</h1>
 
             <!-- FIRST QUESTION SECTION -->
             <div class="section" id="sect1" style="display:block">
@@ -460,10 +460,6 @@
             <!-- SUBMIT BUTTON SECTION -->
             <div class="section" id="sect7">
                 <button class="centerbutton"  onclick="Calculate()">Submit</button>
-            </div>
-
-            <div class="outcome">
-                <h2>Here's what you need to know...</h2>
             </div>
 
             <div class="outcome">
