@@ -15,8 +15,10 @@
         <!-- ======================================================= -->
         <!-- REFERENCED EXTERNAL FILES                               -->
         <!-- ======================================================= -->
-        <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito">
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
         <!-- ======================================================= -->
 
 
@@ -56,7 +58,6 @@
                 margin:                         0 auto;
                 background-color:               white;
                 width:                          80%;
-                height:                         100%;
                 border-top-left-radius:         1.3em;
                 border-top-right-radius:        1.3em;
             }
@@ -106,6 +107,17 @@
             h1 {
                 margin-left:                    5%;
                 margin-right:                   5%;
+            }
+
+            /* STLYE FOR PAGE PARAGRAPHS */
+            p {
+                margin-left:                    5%;
+                margin-right:                   5%;
+            }
+
+            p.inner-paragraph {
+                margin-left:                    0%;
+                margin-right:                   0%;
             }
 
             
@@ -162,7 +174,7 @@
                 margin-left:                    5%;
                 margin-right:                   5%;
                 display:                        none;
-                margin-bottom:                  50px;
+                padding-bottom:                 50px;
             }
 
             /* STYLE FOR OUTCOME SECTIONS */
@@ -191,11 +203,19 @@
                 // SHOW THE NEXT SECTION
                 document.getElementById("sect" + level).style.display = "block";
                 document.getElementById("sect" + (level + 1)).style.display = "block";
-                
+
                 // SCROLL TO THE NEXT SECTION
                 $([document.documentElement, document.body]).animate({
-                scrollTop: $("#sect" + level).offset().top
+                scrollTop: $("#sect" + (level + 1)).offset().top
                 }, 1000);
+            }
+
+            // FUNCTION TO TOGGLE BUTTON BACKGROUNDS
+            function ToggleButtons(enable, disable) {
+
+                // TOGGLE BACKGROUND COLORS
+                document.getElementById(enable).style.backgroundColor = "#a8dbe5";
+                document.getElementById(disable).style.backgroundColor = "white";
             }
 
             // FUNCTION TO INCREMENT OR DECREMENT INTEGER INPUT FIELD
@@ -203,6 +223,18 @@
 
                 // INCREMENT OR DECREMENT THE FIELD
                 document.getElementById(target).value = parseInt(document.getElementById(target).value) + increment;
+
+                // STARTING HTML FOR CHILD DATE OF BIRTH SECTION
+                var DateOfBirthHTML = "<p class='inner-paragraph'>Enter the date of birth for your children:</p>"
+                
+                // SET THE CHILD FIELD
+                for (i = 0; i < parseInt(document.getElementById("children").value); i++) { 
+                    DateOfBirthHTML += "<p class='inner-paragraph'>Child " +  i + ": <input style='width:200px;' type='text' class='datepicker'></p>" + "<br>";
+                }
+
+                document.getElementById("sect4").innerHTML = DateOfBirthHTML;
+
+                $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
             }
 
             // FUNCTION TO CALCULATE OUTCOMES
@@ -211,8 +243,82 @@
                 // ITERATE OVER ELEMENTS WITH OUTCOME CLASS AND MAKE VISIBLE
                 $( "div.outcome" ).show();
 
-            }
+                // SCROLL TO THE NEXT SECTION
+                $([document.documentElement, document.body]).animate({
+                scrollTop: $(".outcome").offset().top
+                }, 1000);
 
+                // ASSEMBLE JSON PEOPLE API RAW DATA
+                JSONPeople = '{ "persons" : { ';
+
+                // ARRAY OF CHILD NAMES
+                Names = ["Tahi", "Rua", "Toru", "Wha", "Rima", "Ono", "Whitu", "Waru", "Iwa", "Tekau"];
+                
+                // ITERATE OVER CHILDREN AND ADD TO JSON PEOPLE
+                for (i = 0; i < parseInt(document.getElementById("children").value); i++) { 
+                    
+                    // FOR SUBSEQUENT CHILDREN AFTER THE FIRST ADD COMMAS
+                    if (i > 0) JSONPeople += ",";
+
+                    // ADD THE BOILERPLATE JSON
+                    JSONPeople += '"' + Names[i] + '" : { "date_of_birth" : { "2018-07" : "' + $(".datepicker")[i].value + '" } } ';
+
+                    // ON THE LAST ITERATION ADD A COMMA
+                    if (i == (parseInt(document.getElementById("children").value) -1)) JSONPeople += "} , "
+                }
+
+                // ASSEMBLE JSON PROPERTIES API RAW DATA
+                JSONProperties = '"titled_properties" : { "Household" : { "owners" : [';
+
+                // ITERATE OVER CHILDREN AND ADD TO JSON PROPERTIES
+                for (i = 0; i < parseInt(document.getElementById("children").value); i++) { 
+                    
+                    // FOR SUBSEQUENT CHILDREN AFTER THE FIRST ADD COMMAS
+                    if (i > 0) JSONProperties += ",";
+
+                    // ADD THE BOILERPLATE JSON
+                    JSONProperties += '"' + Names[i] + '"'
+
+                    // ON THE LAST ITERATION ADD A COMMA
+                    if (i == (parseInt(document.getElementById("children").value) -1)) JSONProperties += "] } }, ";
+                }
+                
+                // ASSEMBLE JSON FAMILIES API RAW DATA
+                JSONFamilies = '"families" : { "Family" : { "children" : [';
+
+                // ITERATE OVER CHILDREN AND ADD TO JSON FAMILIES
+                for (i = 0; i < parseInt(document.getElementById("children").value); i++) { 
+
+                    // FOR SUBSEQUENT CHILDREN AFTER THE FIRST ADD COMMAS
+                    if (i > 0) JSONFamilies += ",";
+
+                    // ADD THE BOILERPLATE JSON
+                    JSONFamilies += '"' + Names[i] + '"'
+
+                    // ON THE LAST ITERATION ADD A COMMA
+                    if (i == (parseInt(document.getElementById("children").value) -1)) {
+
+                        JSONFamilies += '], "education__home_education_supervision_allowance_entitlement" : { "2018-07" : null } } } }';
+                    } 
+                }
+
+                // JSON LOGGING FOR DEBUG PURPOSES
+                console.log(JSONPeople + JSONProperties + JSONFamilies);
+
+                // ASSEMBLE API POST REQUEST
+                $.ajax({
+                    type: 'POST',
+                    contentType: 'application/json',
+                    url: "http://103.197.63.171:2300/calculate",
+                    dataType: "json",
+                    data: JSONPeople + JSONProperties + JSONFamilies,
+
+                    success: function(data, textStatus, jqXHR){
+			            var JSONr = JSON.parse(jqXHR.responseText);
+                        console.log(JSONr);
+                    }
+                });
+        }
         </script>
         <!-- ======================================================= -->
 
@@ -247,27 +353,47 @@
                 </ul>
             </div>
 
-            <h1>Considering home education?</h1>
-            <h1>Let us know your situation...</h1>
+            <!-- INTRODUCTORY KEY PARAGRAPHS-->
+            <h1>Home education in New Zealand</h1>
+            <p>In New Zealand, all children aged between 6 and 16 years of age are required to enrol in and attend a registered school.</p>
+            <p>Home education is where parents or legal guardians take responsibility for the education of their children, instead of enrolling them in school.</p>
+            <p>As outlined in the <a href="http://legislation.govt.nz/act/public/1989/0080/latest/DLM178227.html"> New Zealand Education Act 1989</a>, 
+            any parent or legal guardian of a child aged between 5 and 16 years of age may apply to home educate.</p>
+            <p>To gain approval, your application must satisfy the Ministry that your child will be taught at least as regularly and as well as they would be in a registered school. If your child has special education needs, the application must show that these needs will be met.</p>
+
+            <h1>Want some guidance? Let us know your situation...</h1>
 
             <!-- FIRST QUESTION SECTION -->
             <div class="section" id="sect1" style="display:block">
                 
-                <p>Are you a parent or legal guardian?</p>
-                <button id="yes1" class="leftbutton" onclick="AdvanceSection(2, this.id)">yes</button>
-                <button id="no1" class="rightbutton" onclick="AdvanceSection(2, this.id)">no</button>
+                <p class="inner-paragraph">Are you a New Zealand citizen or permanent resident?</p>
+                <button id="yes1" class="leftbutton" onclick="ToggleButtons('yes1','no1');AdvanceSection(1, this.id)">yes</button>
+                <button id="no1" class="rightbutton" onclick="ToggleButtons('no1','yes1');AdvanceSection(1, this.id)">no</button>
             </div>
 
-            <!-- FIRST QUESTION SECTION -->
+            <!-- SECOND QUESTION SECTION -->
             <div class="section" id="sect2">
-                <p>How many children are you considering home educating?</p>
+                
+                <p class="inner-paragraph">Are you a parent or legal guardian?</p>
+                <button id="yes2" class="leftbutton" onclick="ToggleButtons('yes2','no2');AdvanceSection(3, this.id)">yes</button>
+                <button id="no2" class="rightbutton" onclick="ToggleButtons('no2','yes2');AdvanceSection(3, this.id)">no</button>
+            </div>
+
+            <!-- THIRD QUESTION SECTION -->
+            <div class="section" id="sect3">
+                <p class="inner-paragraph">How many children are you considering home educating?</p>
                 <button class="leftbutton"  onclick="AdvanceField(-1, 'children')">-</button>
-                <input style="width:100px;" id="children" type="text" value="1"/>
+                <input style="width:100px;" id="children" type="text" value="0"/>
                 <button class="rightbutton" onclick="AdvanceField(1, 'children')">+</button>
             </div>
 
+            <!-- FOURTH QUESTION SECTION -->
+            <div class="section" id="sect4">
+
+            </div>
+
             <!-- SUBMIT BUTTON SECTION -->
-            <div class="section" id="sect3">
+            <div class="section" id="sect5">
                 <button class="centerbutton"  onclick="Calculate()">Submit</button>
             </div>
 
